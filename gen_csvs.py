@@ -9,9 +9,7 @@ CATEGORIES = set(
 	["article", "inproceedings", "proceedings", "book", "incollection", "phdthesis", "mastersthesis", "www"]
 )
 DATA_ITEMS = ["title", "booktitle", "journal", "volume", "year", "ee", ]
-TDATA_ITEMS = ["key", "tag", "title", "booktitle", "journal", "volume", "year", "ee"]
 JDATA_ITEMS = ["key", "title", "journal", "volume", "year", "ee"]
-CDATA_ITEMS = ["key", "title", "booktitle", "year", "ee"]
 DBLP_SIZE = 14354271 # For DBLP 2019-10-14
 
 def clear_element(element):
@@ -59,10 +57,8 @@ def write_entry(paper,csv_file,data_items,end='\n'):
 	csv_file.write( end )
 #end write_entry
 
-def read_from_write_to( iter_parser, journal_csv_file, conference_csv_file, trash_csv_file, log_file = sys.stderr ):
+def read_from_write_to( iter_parser, journal_csv_file, log_file = sys.stderr ):
 	write_header( journal_csv_file, JDATA_ITEMS )
-	write_header( conference_csv_file, CDATA_ITEMS )
-	write_header( trash_csv_file, TDATA_ITEMS )
 	for paperCounter, element in enumerate( extract_paper_elements( iter_parser ) ):
 		if element.get("key") is None or element.tag is None:
 			continue
@@ -87,13 +83,8 @@ def read_from_write_to( iter_parser, journal_csv_file, conference_csv_file, tras
 			bt = '' if paper["booktitle"] is None else paper["booktitle"]
 			j = '' if paper["journal"] is None else paper["journal"]
 			if venue in bt or venue in j:
-				if paper["tag"] == "inproceedings":
-					write_entry( paper, conference_csv_file, CDATA_ITEMS )
-				elif paper["tag"] == "article":
+				if paper["tag"] == "article":
 					write_entry( paper, journal_csv_file, JDATA_ITEMS )
-				else:
-					write_entry( paper, trash_csv_file, TDATA_ITEMS )
-				#end if
 				break
 			#end if
 		#end for
@@ -106,17 +97,12 @@ def read_from_write_to( iter_parser, journal_csv_file, conference_csv_file, tras
 			)
 		#end if
 	#end for
-	print(paperCounter)
 #end read_from_write_to
 
 def main():
 	with open( "jdblp.csv", mode = "w", encoding = "utf-8" ) as journal_csv_file:
-		with open( "cdblp.csv", mode = "w", encoding = "utf-8" ) as conference_csv_file:
-			with open( "trash.csv", mode = "w", encoding = "utf-8" ) as trash_csv_file:
-				iter_parser = etree.iterparse(PATH_TO_XML, dtd_validation=True, events=("start", "end"))
-				read_from_write_to(iter_parser, journal_csv_file, conference_csv_file, trash_csv_file)
-			#end with
-		#end with
+		iter_parser = etree.iterparse(PATH_TO_XML, dtd_validation=True, events=("start", "end"))
+		read_from_write_to(iter_parser, journal_csv_file)
 	#end with
 #end main
 
