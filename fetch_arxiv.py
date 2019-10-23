@@ -11,6 +11,7 @@ while repeat:
                 ddate = datetime.date.fromisoformat(d["date"][0])
                 earliest_date = max(earliest_date, ddate)
 
+        print("Fetching records from {}".format(earliest_date))
         sickle = Sickle('http://export.arxiv.org/oai2')
         
         records = sickle.ListRecords(metadataPrefix='oai_dc',**{"from":earliest_date})
