@@ -14,7 +14,7 @@ for i in range(repeat):
         print("Fetching records from {}".format(earliest_date))
         sickle = Sickle('http://export.arxiv.org/oai2')
         
-        records = sickle.ListRecords(metadataPrefix='oai_dc',**{"from":earliest_date})
+        records = sickle.ListRecords(metadataPrefix='oai_dc',**{"from":earliest_date,"set":"cs"})
         for record in records:
             metadata = record.metadata
             identifier = ''.join(metadata['identifier'][0].split('/')[-2:])
