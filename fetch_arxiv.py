@@ -1,10 +1,10 @@
 import json, os, datetime, requests.exceptions, time
 from sickle import Sickle
 
-repeat = True
-while repeat:
+repeat = 10
+for i in range(repeat):
     try:
-        earliest_date = datetime.date(1,1,4)
+        earliest_date = datetime.date(1,1,1)
         for fname in [fname for fname in os.listdir("jsons/") if fname != ".gitkeep"]:
             with open("jsons/{}".format(fname),"r") as f:
                 d = json.load(f)
@@ -21,7 +21,8 @@ while repeat:
             print(metadata)
             with open('jsons/{}'.format(identifier), 'w') as f:
                 json.dump(metadata, f)
-        repeat = False
+        break
     except requests.exceptions.ReadTimeout as e:
+        print("Read timeout!")
         time.sleep(60)
 
